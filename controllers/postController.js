@@ -2,7 +2,7 @@ const Comment = require("../models/comment");
 const Like = require("../models/like");
 const Post = require("../models/post");
 const User = require("../models/user");
-const ApiFeatures = require("../utils/apiFeatures");
+const ApiFeatures = require("../utils/ApiFeatures");
 const catchAsync = require("../utils/catchAsync");
 
 exports.updatePost = catchAsync(async (req, res, next) => {
