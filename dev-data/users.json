@@ -1,0 +1,57 @@
+[
+    {
+        "id": 1,
+        "name": "Sachin",
+        "email": "sachinsharma@gmail.com",
+        "password": "parasf@1234",
+        "location": "India",
+        "work": "Software Engineer",
+        "bio": "I am a software engineer",
+        "website": "https://sachinsharma.com",
+        "isAdmin": true
+    },
+    {
+        "id": 21,
+        "name": "Sam",
+        "email": "sam@gmail.com",
+        "password": "parasf@1234",
+        "location": "India",
+        "work": "Software Engineer",
+        "bio": "I am a software engineer",
+        "website": "https://sachinsharma.com",
+        "isAdmin": true
+    },
+    {
+        "id": 3,
+        "name": "Tim",
+        "email": "tim@gmail.com",
+        "password": "parasf@1234",
+        "location": "India",
+        "work": "Software Engineer",
+        "bio": "I am a software engineer",
+        "website": "https://sachinsharma.com",
+        "isAdmin": true
+    },
+    {
+        "id": 4,
+        "name": "Man",
+        "email": "man@gmail.com",
+        "password": "parasf@1234",
+        "location": "India",
+        "work": "Software Engineer",
+        "bio": "I am a software engineer",
+        "website": "https://sachinsharma.com",
+        "isAdmin": true
+    },
+    {
+        "id": 5,
+        "name": "Him",
+        "email": "him@gmail.com",
+        "password": "parasf@1234",
+        "location": "India",
+        "work": "Software Engineer",
+        "bio": "I am a software engineer",
+        "website": "https://sachinsharma.com",
+        "isAdmin": true
+    }
+]
