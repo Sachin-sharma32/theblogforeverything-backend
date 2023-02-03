@@ -4,17 +4,41 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/AppError");
 const Bookmark = require("../models/bookmark");
 const Like = require("../models/like");
-const sendEmail = require("../utils/email");
+const sendEmail = require("../utils/registerEmail");
+const sendPasswordResetEmail = require("../utils/passwordResetEmail");
 
-exports.createUser = catchAsync(async (req, res) => {
-    const newUser = await User.create(req.body);
-    await Bookmark.create({ userId: newUser._id, posts: [] });
-    res.status(200).json({
-        message: "success",
-        data: {
-            newUser,
-        },
+exports.verifyEmail = catchAsync(async (req, res) => {
+    const { email } = req.body;
+    const exist = await User.findOne({
+        email: { $regex: new RegExp(email, "i") },
     });
+    if (exist) {
+        return next(new AppError("User with this email already exists", 400));
+    }
+    await sendEmail({
+        email: req.body.email,
+        name: req.body.name,
+        subject: "User verification link",
+        url: `http://localhost:8000/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
+        message: `http://localhost:8000/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
+    });
+    res.status(200).json({
+        status: "success",
+    });
+});
+
+exports.register = catchAsync(async (req, res, next) => {
+    const { name, email, password } = req.query;
+    const exist = await User.findOne({
+        email: { $regex: new RegExp(email, "i") },
+    });
+    if (exist) {
+        return next(new AppError("Session Expired", 400));
+    }
+    const newUser = await User.create({ name, email, password });
+    await Bookmark.create({ userId: newUser._id, posts: [] });
+    res.redirect("http://localhost:3000/signin");
+    res.end();
 });
 
 exports.logIn = catchAsync(async (req, res, next) => {
@@ -54,19 +78,18 @@ exports.logIn = catchAsync(async (req, res, next) => {
         if (!user) {
             user = await User.collection.insertOne(req.body);
             await Bookmark.create({ userId: user.insertedId, posts: [] });
-            await Like.create({ userId: user.insertedId, posts: [] });
             user = await User.findOne({
                 _id: user.insertedId,
             });
         }
 
         const { token, refreshToken } = await user.createTokens(user);
-        res.cookie("jwt", refreshToken, {
-            httpOnly: true,
-        });
         res.status(200).json({
             message: "success",
-            token: token,
+            data: {
+                user,
+                token,
+            },
         });
     }
 });
@@ -163,18 +186,21 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
     const resetUrl = `${req.protocol}://localhost:3000/resetPassword/${resetToken}`;
     const message = `Visit this link ${resetUrl} to reset your password. If you havn't forget your password then ignore this mail.`;
-    await sendEmail({
-        email: user.email,
-        subject: "password reset link (valid for 10 min)",
-        message: message,
+    await sendPasswordResetEmail({
+        email: req.body.email,
+        subject: "Password reset link",
+        url: `http://localhost:3000/resetPassword/${resetToken}`,
+        message: `http://localhost:3000/resetPassword/${resetToken}`,
     });
     res.status(200).json({
-        message: "success",
+        status: "success",
         message: "password reset link sent successfully",
     });
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
+    console.log(req.body);
+    const password = req.body.user.password;
     const { resetToken } = req.params;
     const user = await User.findOne({
         passwordResetToken: resetToken,
@@ -183,8 +209,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     if (!user) {
         return next(new AppError("token is incorrect or was expired", 400));
     }
-    user.password = req.body.password;
-    user.passwordConfirm = req.body.passwordConfirm;
+    user.password = password;
     user.passwordResetToken = undefined;
     user.passwordResetExpiry = undefined;
     await user.save();

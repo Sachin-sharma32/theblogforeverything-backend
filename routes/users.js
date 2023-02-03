@@ -17,12 +17,12 @@ const {
 const router = express.Router();
 
 router.route("/totalBookmarks").get(verifyUser, getTotalBookmarks);
-router.route("/total").get(verifyUser, getTotalUsers);
+router.route("/total").get(getTotalUsers);
 router
     .route("/:id")
     .patch(verifyUser, updateUser) //* use "userImage" in fie;d to upload
     .delete(verifyUser, deleteUser)
-    .get(verifyUser, getUser);
+    .get(getUser);
 router
     .route("/bookmarks/:id")
     .patch(verifyUser, handleBookmark)

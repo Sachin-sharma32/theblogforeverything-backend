@@ -20,7 +20,7 @@ router.route("/comment/:id").delete(verifyAdmin, deleteComment);
 router
     .route("/:id")
     .post(verifyToken, createComment)
-    .get(verifyToken, getAllComments);
+    .get(getAllComments);
 
 router
     .route("/:commentsId/comment/:commentId")

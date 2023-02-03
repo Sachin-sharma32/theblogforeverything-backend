@@ -3,10 +3,17 @@ const Like = require("../models/like");
 const Post = require("../models/post");
 const User = require("../models/user");
 const ApiFeatures = require("../utils/ApiFeatures");
+const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 
 exports.updatePost = catchAsync(async (req, res, next) => {
     const { id } = req.params;
+    const post = await Post.findOne({
+        bestPost: { $in: [true] },
+    });
+    if (post && req.body.bestPost) {
+        return next(new AppError("There is already a best post", 400));
+    }
     const updatedDoc = await Post.findByIdAndUpdate(id, req.body, {
         // runValidators: true,
         new: true,
@@ -31,7 +38,8 @@ exports.deletePost = catchAsync(async (req, res, next) => {
 exports.getAllPosts = catchAsync(async (req, res, next) => {
     const features = new ApiFeatures(Post.find(), req.query)
         .pagination()
-        .sort();
+        .sort()
+        .filter();
     const docs = await features.query;
     res.status(200).json({
         status: "success",
@@ -53,6 +61,12 @@ exports.getPost = catchAsync(async (req, res, next) => {
 });
 
 exports.createPost = catchAsync(async (req, res, next) => {
+    const post = await Post.findOne({
+        bestPost: { $in: [true] },
+    });
+    if (post && req.body.bestPost) {
+        return next(new AppError("There is already a best post", 400));
+    }
     const doc = await Post.create(req.body);
     await Like.create({ postId: doc._id, users: [] });
     await Comment.create({ postId: doc._id, comments: [] });
@@ -144,6 +158,20 @@ exports.getUsersByBookmark = catchAsync(async (req, res, next) => {
         status: "success",
         data: {
             users,
+        },
+    });
+});
+
+exports.getRelatedPosts = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const post = await Post.findById(id);
+    const relatedPosts = await Post.find({
+        category: { $in: [post.category] },
+    }).limit(2);
+    res.status(200).json({
+        status: "success",
+        data: {
+            relatedPosts,
         },
     });
 });

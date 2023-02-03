@@ -40,6 +40,7 @@ exports.getComment = catchAsync(async (req, res, next) => {
 });
 
 exports.createComment = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
     const comment = await Comment.findOne({
         postId: { $in: [id] },
     });

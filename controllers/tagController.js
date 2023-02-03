@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const Tag = require("../models/tag");
+const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getAllTags = catchAsync(async (req, res, next) => {
@@ -33,6 +34,12 @@ exports.deleteTag = catchAsync(async (req, res, next) => {
 });
 
 exports.updateTag = catchAsync(async (req, res, next) => {
+    const exist = await Tag.findOne({
+        title: { $regex: new RegExp(req.body.title, "i") },
+    });
+    if (exist) {
+        return next(new AppError("Tag with this name already exists", 400));
+    }
     const { id } = req.params;
     const doc = await Tag.findByIdAndUpdate(id, req.body, {
         runValidators: true,
@@ -47,6 +54,12 @@ exports.updateTag = catchAsync(async (req, res, next) => {
 });
 
 exports.createTag = catchAsync(async (req, res, next) => {
+    const exist = await Tag.findOne({
+        title: { $regex: new RegExp(req.body.title, "i") },
+    });
+    if (exist) {
+        return next(new AppError("Tag with this name already exists", 400));
+    }
     const doc = await Tag.create(req.body);
     res.status(200).json({
         status: "success",

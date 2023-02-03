@@ -10,6 +10,8 @@ const {
     totalPosts,
     getUsersByBookmark,
     getTotalLikes,
+    getRelatedPosts,
+    searchPosts
 } = require("../controllers/postController");
 
 const {
@@ -18,16 +20,17 @@ const {
 } = require("../controllers/authController.js");
 
 const router = express.Router();
+router.route("/").get(getAllPosts).post(verifyAdmin, createPost);
 router.route("/bestPost/best").get(getBestPost);
 router.route("/total").get(totalPosts);
 router.route("/totalLikes").get(getTotalLikes);
+router.route("/relatedPosts/:id").get(getRelatedPosts);
 
 router
     .route("/:id")
     .patch(verifyAdmin, updatePost)
     .delete(verifyAdmin, deletePost)
-    .get(verifyToken, getPost);
+    .get(getPost);
 router.route("/likes/:id").patch(verifyToken, handleLike);
-router.route("/bookmarks/:id").get(verifyToken, getUsersByBookmark);
-router.route("/").get(verifyToken, getAllPosts).post(verifyAdmin, createPost);
+router.route("/bookmarks/:id").get(getUsersByBookmark);
 module.exports = router;

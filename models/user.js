@@ -4,6 +4,7 @@ const cryptoJs = require("crypto-js");
 const validator = require("validator");
 const dotenv = require("dotenv");
 dotenv.config({ path: "../../config.env" });
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
     {
@@ -23,16 +24,6 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
             minLength: [6, "password should be atleast 6 characters long"],
-        },
-        passwordConfirm: {
-            type: String,
-            required: true,
-            validate: {
-                validator: function (el) {
-                    return el === this.password;
-                },
-                message: "please fill same passwords in the fields",
-            },
         },
         bookmarks: [
             {
@@ -71,10 +62,7 @@ userSchema.methods.comparePasswords = async (userPassword, requestPassword) => {
 };
 
 userSchema.methods.createPasswordResetToken = async function () {
-    const resetToken = cryptoJs.AES.encrypt(
-        process.env.passwordSecret,
-        "sachin1234"
-    ).toString();
+    const resetToken = crypto.randomBytes(32).toString("hex");
     this.passwordResetToken = resetToken;
     this.passwordResetExpiry = Date.now() + 10 * 1000 * 60;
     return resetToken;

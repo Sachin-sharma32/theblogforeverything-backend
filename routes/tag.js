@@ -12,12 +12,12 @@ const {
     getTotalTags
 } = require("../controllers/tagController");
 
-router.route('/total').get(verifyUser, getTotalTags)
+router.route('/total').get(getTotalTags)
 router.route("/").get(getAllTags).post(verifyAdmin, createTag);
 router
     .route("/:id")
     .delete(verifyAdmin, deleteTag)
     .patch(verifyAdmin, updateTag)
     .get(getTag);
-router.route("/posts/:id").get(verifyUser, getPostsByTag);
+router.route("/posts/:id").get(getPostsByTag);
 module.exports = router;

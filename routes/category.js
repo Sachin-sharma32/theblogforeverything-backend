@@ -12,16 +12,16 @@ const {
 
 const router = express.Router();
 
-router.route('/total').get(verifyToken, getTotalCategories)
+router.route('/total').get(getTotalCategories)
 router
     .route("/:id")
     .delete(verifyAdmin, deleteCategory)
     .patch(verifyAdmin, updateCategory)
-    .get(verifyToken, getCategory);
-router.route("/posts/:id").get(verifyToken, getPostsByCategory);
+    .get(getCategory);
+router.route("/posts/:id").get(getPostsByCategory);
 router
     .route("/")
     .post(verifyAdmin, createCategory)
-    .get(verifyToken, getAllCategories);
+    .get(getAllCategories);
 
 module.exports = router;

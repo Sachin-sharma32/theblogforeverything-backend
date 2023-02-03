@@ -1,5 +1,8 @@
 const { verifyToken } = require("../controllers/authController");
-const { createTestimonial, getAllTestimonials } = require("../controllers/testimonialController");
+const {
+    createTestimonial,
+    getAllTestimonials,
+} = require("../controllers/testimonialController");
 
 const router = require("express").Router();
 
