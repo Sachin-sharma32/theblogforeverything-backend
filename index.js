@@ -127,23 +127,23 @@ app.use((err, req, res, next) => {
     if (err.name === "JsonWebTokenError") error = handleJWTError(error);
     if (err.name === "TokenExpiredError")
         error = handleExpirationalError(error);
-    // res.status(error.statusCode).json({
-    //     status: error.status,
-    //     message: error.msg,
-    // });
-    res.status(500).json({
-        message: err.message,
+    res.status(error.statusCode).json({
+        status: error.status,
+        message: error.msg,
     });
+    // res.status(500).json({
+    //     message: err.message,
+    // });
 });
 
 mongoose
     .connect(
-        "mongodb+srv://sachin:sachin1234@cluster0.qryslrm.mongodb.net/?retryWrites=true&w=majority"
+        process.env.DB
     )
     .then((connection) => {
         console.log("connected to db");
     });
 
-app.listen(8000, () => {
+app.listen(process.env.PORT, () => {
     console.log("server is up and running");
 });
