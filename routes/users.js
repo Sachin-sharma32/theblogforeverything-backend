@@ -12,13 +12,15 @@ const {
     getAllBookmarks,
     getTotalUsers,
     getTotalBookmarks,
+    getUserPosts,
 } = require("../controllers/userController");
 
 const router = express.Router();
 
+router.route("/posts/:id").get(getUserPosts);
 router
     .route("/:id")
-    .patch(verifyUser, updateUser) 
+    .patch(verifyUser, updateUser)
     .delete(verifyUser, deleteUser)
     .get(getUser);
 router.route("/totalBookmarks").get(verifyUser, getTotalBookmarks);

@@ -166,3 +166,17 @@ exports.getTotalBookmarks = catchAsync(async (req, res, next) => {
         },
     });
 });
+
+exports.getUserPosts = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const docs = await Post.find({
+        author: { $in: [id] },
+    });
+    console.log(docs);
+    res.status(200).json({
+        status: "success",
+        data: {
+            docs,
+        },
+    });
+});
