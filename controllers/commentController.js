@@ -16,7 +16,7 @@ exports.getAllComments = catchAsync(async (req, res, next) => {
         postId: { $in: [id] },
     });
     // .select({ comments: 1, _id: 0, postId: 0 });
-    console.log(docs);
+    docs;
     res.status(200).json({
         status: "success",
         data: {

@@ -10,6 +10,7 @@ exports.updatePost = catchAsync(async (req, res, next) => {
     const { id } = req.params;
     const post = await Post.findOne({
         bestPost: { $in: [true] },
+        _id: { $ne: id },
     });
     if (post && req.body.bestPost) {
         return next(new AppError("There is already a best post", 400));
@@ -68,6 +69,14 @@ exports.createPost = catchAsync(async (req, res, next) => {
         return next(new AppError("There is already a best post", 400));
     }
     const doc = await Post.create(req.body);
+    const user = await User.findById(req.body.author._id);
+    console.log(doc);
+    console.log(user);
+    user.posts.push(doc);
+    await User.findByIdAndUpdate(user._id, user, {
+        runValidators: true,
+        new: true,
+    });
     await Like.create({ postId: doc._id, users: [] });
     await Comment.create({ postId: doc._id, comments: [] });
     res.status(200).json({
@@ -79,7 +88,7 @@ exports.createPost = catchAsync(async (req, res, next) => {
 });
 
 exports.getBestPost = catchAsync(async (req, res, next) => {
-    const doc = await Post.find({
+    const doc = await Post.findOne({
         bestPost: { $in: [true] },
     });
     res.status(200).json({
@@ -92,6 +101,7 @@ exports.getBestPost = catchAsync(async (req, res, next) => {
 
 exports.handleLike = catchAsync(async (req, res, next) => {
     const { id } = req.params;
+    // console.log(id, req.body.userId);
     let post = await Post.findById(id);
     const userId = req.body.userId;
 
@@ -102,7 +112,8 @@ exports.handleLike = catchAsync(async (req, res, next) => {
     let exist;
     if (post.likes.length > 0) {
         exist = post.likes.find((like) => {
-            return like == userId;
+            console.log(like);
+            return like._id == userId;
         });
     }
     if (exist) {
@@ -153,7 +164,6 @@ exports.getUsersByBookmark = catchAsync(async (req, res, next) => {
     const users = await User.find({
         bookmarks: { $in: [id] },
     });
-    console.log(users);
     res.status(200).json({
         status: "success",
         data: {

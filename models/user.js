@@ -36,6 +36,20 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        posts: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Post",
+                default: [],
+            },
+        ],
+        preferences: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Category",
+                default: [],
+            },
+        ],
         image: String,
         location: String,
         work: String,
@@ -45,6 +59,19 @@ const userSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+// userSchema.pre(/^find/, async function (next) {
+//     this.populate({
+//         path: "bookmarks",
+//     })
+//         // .populate({
+//         //     path: "posts",
+//         // })
+//         // .populate({
+//         //     path: "preferences",
+//         // });
+//     next();
+// });
 
 userSchema.pre("save", async function (next) {
     (this.password = cryptoJs.AES.encrypt(
@@ -77,7 +104,7 @@ userSchema.methods.createTokens = async (user) => {
         },
         "sachin1234",
         {
-            expiresIn: 60 * 60 * 24 * 7,
+            expiresIn: 60 * 60 * 24 * 7 * 1000,
         }
     );
     //* refresh token

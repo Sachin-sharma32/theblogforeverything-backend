@@ -11,7 +11,7 @@ const {
     getUsersByBookmark,
     getTotalLikes,
     getRelatedPosts,
-    searchPosts
+    searchPosts,
 } = require("../controllers/postController");
 
 const {
@@ -20,8 +20,8 @@ const {
 } = require("../controllers/authController.js");
 
 const router = express.Router();
+router.route("/bestPost").get(getBestPost);
 router.route("/").get(getAllPosts).post(verifyAdmin, createPost);
-router.route("/bestPost/best").get(getBestPost);
 router.route("/total").get(totalPosts);
 router.route("/totalLikes").get(getTotalLikes);
 router.route("/relatedPosts/:id").get(getRelatedPosts);

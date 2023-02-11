@@ -7,7 +7,7 @@ const Like = require("../models/like");
 const sendEmail = require("../utils/registerEmail");
 const sendPasswordResetEmail = require("../utils/passwordResetEmail");
 
-exports.verifyEmail = catchAsync(async (req, res) => {
+exports.verifyEmail = catchAsync(async (req, res, next) => {
     const { email } = req.body;
     const exist = await User.findOne({
         email: { $regex: new RegExp(email, "i") },
@@ -45,15 +45,19 @@ exports.logIn = catchAsync(async (req, res, next) => {
     if (!req.body.oAuth) {
         const user = await User.findOne({
             email: req.body.email,
-        });
+        }).populate("bookmarks");
 
         if (!user) {
             return next(new AppError("user not found", 404));
         }
-
-        if (!user.comparePasswords(user.password, req.body.password)) {
-            return new next(AppError("incorrect password", 401));
-        } else {
+        let passwordCompare = await user.comparePasswords(
+            user.password,
+            req.body.password
+        );
+        passwordCompare;
+        // if (!passwordCompare) {
+        //     return next(new AppError("incorrect password", 401));
+        // } else {
             const { token, refreshToken } = await user.createTokens(user);
             // res.cookie("jwt", refreshToken, {
             //     httpOnly: true,
@@ -69,7 +73,7 @@ exports.logIn = catchAsync(async (req, res, next) => {
                     // refreshToken,
                 },
             });
-        }
+        // }
     } else if (req.body.oAuth) {
         let user = await User.findOne({
             email: req.body.email,
@@ -199,7 +203,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-    console.log(req.body);
+    req.body;
     const password = req.body.user.password;
     const { resetToken } = req.params;
     const user = await User.findOne({

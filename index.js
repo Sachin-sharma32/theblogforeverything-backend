@@ -21,6 +21,8 @@ const uploadRouter = require("./routes/upload");
 const AppError = require("./utils/AppError");
 const tagRouter = require("./routes/tag");
 const { getMe } = require("./controllers/userController");
+const { Configuration, OpenAIApi } = require("openai");
+const catchAsync = require("./utils/catchAsync");
 
 const app = express();
 
@@ -82,6 +84,33 @@ app.use("/api/v1/comments", commentRouter);
 app.use("/api/v1/tags", tagRouter);
 app.get("/getMe", getMe);
 
+app.post(
+    "/assistence",
+    catchAsync(async (req, res, next) => {
+        console.log(req.body);
+        const configuration = new Configuration({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
+        const openai = new OpenAIApi(configuration);
+        const response = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: `${req.body.prompt}`,
+            //* risk - temprature
+            temperature: 0,
+            //* response size (characters)
+            max_tokens: 3000,
+            top_p: 1,
+            //* likelyhood of repeating the same response
+            frequency_penalty: 0.5,
+            presence_penalty: 0,
+        });
+        console.log(response.data.choices[0].text);
+        res.status(200).send({
+            bot: response.data.choices[0].text,
+        });
+    })
+);
+
 // app.use("/api/v1/stats", statRouter);
 app.use("/api/v1/testimonials", testimonialRouter);
 
@@ -127,23 +156,23 @@ app.use((err, req, res, next) => {
     if (err.name === "JsonWebTokenError") error = handleJWTError(error);
     if (err.name === "TokenExpiredError")
         error = handleExpirationalError(error);
-    res.status(error.statusCode).json({
-        status: error.status,
-        message: error.msg,
-    });
-    // res.status(500).json({
-    //     message: err.message,
+    // res.status(error.statusCode).json({
+    //     status: error.status,
+    //     message: error.msg,
     // });
+    res.status(500).json({
+        message: err.message,
+    });
 });
 
 mongoose
     .connect(
-        process.env.DB
+        "mongodb+srv://sachin:sachin1234@cluster0.qryslrm.mongodb.net/?retryWrites=true&w=majority"
     )
     .then((connection) => {
-        console.log("connected to db");
+        ("connected to db");
     });
 
 app.listen(process.env.PORT, () => {
-    console.log("server is up and running");
+    ("server is up and running");
 });

@@ -22,6 +22,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.post("/", upload.single("image"), async (req, res) => {
+    AWS_ACCESS_KEY, AWS_BUCKET, AWS_BUCKET_REGION, AWS_SECRET_ACCESS_KEY;
     if (req.file.buffer.length > 0) {
         // const buffer = await sharp(req.file.buffer)
         //     .resize({ width: 1920, height: 1080, fit: "contain" })

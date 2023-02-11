@@ -18,6 +18,13 @@ const postSchema = new mongoose.Schema(
                 ref: "Tag",
             },
         ],
+        type: {
+            type: String,
+            enum: {
+                values: ["post", "story", "experience", "story"],
+                message: "Type can only be blog|story|experience|information",
+            },
+        },
         content: {
             type: String,
             required: true,
@@ -50,7 +57,8 @@ postSchema.pre(/^find/, function (next) {
         })
         .populate({
             path: "tags",
-        }).populate({
+        })
+        .populate({
             path: "likes",
         });
     next();

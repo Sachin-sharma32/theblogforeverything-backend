@@ -6,6 +6,7 @@ const catchAsync = require("../utils/catchAsync");
 const Post = require("../models/post");
 
 exports.updateUser = catchAsync(async (req, res, next) => {
+    console.log(req.body);
     const { id } = req.params;
 
     if (req.body.password) {
@@ -35,6 +36,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
     const docs = await User.find();
+    docs;
     res.status(200).json({
         status: "success",
         data: {
@@ -50,7 +52,10 @@ exports.getMe = catchAsync(async (req, res) => {
         res.status(500).json({ message: "authorization token not provided" });
     }
     const decoded = jwt.verify(token, "sachin1234");
-    const user = await User.findOne({ _id: decoded.id });
+    const user = await User.findOne({ _id: decoded.id })
+        .populate("bookmarks")
+        .populate("posts")
+        .populate("preferences");
     res.status(200).json({
         status: "success",
         data: {
@@ -61,7 +66,10 @@ exports.getMe = catchAsync(async (req, res) => {
 
 exports.getUser = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const doc = await User.findById(id);
+    const doc = await User.findById(id)
+        .populate("bookmarks")
+        .populate("preferences")
+        .populate("posts");
     res.status(200).json({
         status: "success",
         data: {
@@ -123,7 +131,7 @@ exports.getUserLikes = catchAsync(async (req, res, next) => {
 
 exports.getAllBookmarks = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    console.log(id);
+    id;
     const bookmarks = await User.findById(id)
         .select("bookmarks")
         .populate("bookmarks");
@@ -150,7 +158,7 @@ exports.getTotalBookmarks = catchAsync(async (req, res, next) => {
     const totalBookmarks = users.reduce((acc, user) => {
         return acc + user.bookmarks.length;
     }, 0);
-    console.log(totalBookmarks);
+    totalBookmarks;
     res.status(200).json({
         status: "success",
         data: {
