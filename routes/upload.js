@@ -5,14 +5,14 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const sharp = require("sharp");
 const AWS_BUCKET = process.env.AWS_BUCKET;
 const AWS_BUCKET_REGION = process.env.AWS_BUCKET_REGION;
-const AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
+const AWS_KEY = process.env.AWS_KEY;
 const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 const crypto = require("crypto");
 
 const s3 = new S3Client({
     region: AWS_BUCKET_REGION,
     credentials: {
-        accessKeyId: AWS_ACCESS_KEY,
+        accessKeyId: AWS_KEY,
         secretAccessKey: AWS_SECRET_ACCESS_KEY,
     },
 });
@@ -22,7 +22,6 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.post("/", upload.single("image"), async (req, res) => {
-    AWS_ACCESS_KEY, AWS_BUCKET, AWS_BUCKET_REGION, AWS_SECRET_ACCESS_KEY;
     if (req.file.buffer.length > 0) {
         // const buffer = await sharp(req.file.buffer)
         //     .resize({ width: 1920, height: 1080, fit: "contain" })
