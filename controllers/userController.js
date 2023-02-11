@@ -172,7 +172,6 @@ exports.getUserPosts = catchAsync(async (req, res, next) => {
     const docs = await Post.find({
         author: { $in: [id] },
     });
-    console.log(docs);
     res.status(200).json({
         status: "success",
         data: {
