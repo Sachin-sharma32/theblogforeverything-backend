@@ -19,8 +19,8 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
         email: req.body.email,
         name: req.body.name,
         subject: "User verification link",
-        url: `http://localhost:8000/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
-        message: `http://localhost:8000/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
+        url: `https://theblogforeverything-backend-h8fa.vercel.app/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
+        message: `https://theblogforeverything-backend-h8fa.vercel.app/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
     });
     res.status(200).json({
         status: "success",
@@ -37,7 +37,7 @@ exports.register = catchAsync(async (req, res, next) => {
     }
     const newUser = await User.create({ name, email, password });
     await Bookmark.create({ userId: newUser._id, posts: [] });
-    res.redirect("http://localhost:3000/signin");
+    res.redirect("https://theblogforeverything.com/signin");
     res.end();
 });
 
@@ -58,21 +58,21 @@ exports.logIn = catchAsync(async (req, res, next) => {
         // if (!passwordCompare) {
         //     return next(new AppError("incorrect password", 401));
         // } else {
-            const { token, refreshToken } = await user.createTokens(user);
-            // res.cookie("jwt", refreshToken, {
-            //     httpOnly: true,
-            //     // secure: true, // https
-            //     // sameSite: "none", // to access on different IP
-            //     maxAge: 7 * 24 * 60 * 60 * 1000,
-            // });
-            res.status(200).json({
-                message: "success",
-                data: {
-                    user,
-                    token,
-                    // refreshToken,
-                },
-            });
+        const { token, refreshToken } = await user.createTokens(user);
+        // res.cookie("jwt", refreshToken, {
+        //     httpOnly: true,
+        //     // secure: true, // https
+        //     // sameSite: "none", // to access on different IP
+        //     maxAge: 7 * 24 * 60 * 60 * 1000,
+        // });
+        res.status(200).json({
+            message: "success",
+            data: {
+                user,
+                token,
+                // refreshToken,
+            },
+        });
         // }
     } else if (req.body.oAuth) {
         let user = await User.findOne({
@@ -193,8 +193,8 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     await sendPasswordResetEmail({
         email: req.body.email,
         subject: "Password reset link",
-        url: `http://localhost:3000/resetPassword/${resetToken}`,
-        message: `http://localhost:3000/resetPassword/${resetToken}`,
+        url: `https://theblogforeverything.com/resetPassword/${resetToken}`,
+        message: `https://theblogforeverything.com/resetPassword/${resetToken}`,
     });
     res.status(200).json({
         status: "success",
@@ -203,8 +203,8 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-    req.body;
-    const password = req.body.user.password;
+    console.log(req.body);
+    const password = req.body.password;
     const { resetToken } = req.params;
     const user = await User.findOne({
         passwordResetToken: resetToken,

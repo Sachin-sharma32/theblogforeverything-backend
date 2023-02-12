@@ -42,6 +42,7 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
         .sort()
         .filter();
     const docs = await features.query;
+    console.log(docs);
     res.status(200).json({
         status: "success",
         data: {
