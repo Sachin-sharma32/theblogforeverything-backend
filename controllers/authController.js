@@ -80,7 +80,6 @@ exports.logIn = catchAsync(async (req, res, next) => {
 
         if (!user) {
             user = await User.collection.insertOne(req.body);
-            await Bookmark.create({ userId: user.insertedId, posts: [] });
             user = await User.findOne({
                 _id: user.insertedId,
             });
