@@ -55,16 +55,16 @@ exports.logIn = catchAsync(async (req, res, next) => {
             req.body.password
         );
         passwordCompare;
-        // if (!passwordCompare) {
-        //     return next(new AppError("incorrect password", 401));
-        // } else {
+        if (!passwordCompare) {
+            return next(new AppError("incorrect password", 401));
+        } else {
         const { token, refreshToken } = await user.createTokens(user);
-        // res.cookie("jwt", refreshToken, {
-        //     httpOnly: true,
-        //     // secure: true, // https
-        //     // sameSite: "none", // to access on different IP
-        //     maxAge: 7 * 24 * 60 * 60 * 1000,
-        // });
+        res.cookie("jwt", refreshToken, {
+            httpOnly: true,
+            // secure: true, // https
+            // sameSite: "none", // to access on different IP
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
         res.status(200).json({
             message: "success",
             data: {
@@ -203,7 +203,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-    console.log(req.body);
+    console.log(req.body); 
     const password = req.body.password;
     const { resetToken } = req.params;
     const user = await User.findOne({

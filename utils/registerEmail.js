@@ -2,14 +2,14 @@ const nodemailer = require("nodemailer");
 
 const sendEmail = async (options) => {
     const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
+        host: "smtp.zoho.in",
         auth: {
-            user: "sachin2sharma001@gmail.com",
-            pass: "fqjxppcdhntarlfa",
+            user: process.env.EMAIL,
+            pass: process.env.PASSWORD,
         },
     });
     const mailOptions = {
-        from: "sachin sharma <sachin2sharma001@gmail.com>",
+        from: ` TBFE <${process.env.EMAIL}>`,
         to: options.email,
         subject: options.subject,
         html: ` <table class="one-column" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-spacing:0; border-left:1px solid #e8e7e5; border-right:1px solid #e8e7e5; border-bottom:1px solid #e8e7e5; padding: 10px" bg="#FFFFFF">
@@ -33,7 +33,7 @@ const sendEmail = async (options) => {
               <a style="color: white; background-color: black; padding-right: 10px; padding-left: 10px; padding-top: 4px; padding-bottom: 4px; border: none; text-decoration: none;" href=${options.url}>REGISTER</a>
           </p></td>
         </tr>
-      </tables>`,
+      </table>`,
     };
     await transporter.sendMail(mailOptions);
 };
