@@ -21,8 +21,8 @@ const postSchema = new mongoose.Schema(
         type: {
             type: String,
             enum: {
-                values: ["blog", "story", "experience", "information"],
-                message: "Type can only be blog|story|experience|information",
+                values: ["blog", "short", "experience", "information"],
+                message: "Type can only be blog|short|experience|information",
             },
         },
         content: {
