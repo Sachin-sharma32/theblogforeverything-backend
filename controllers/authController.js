@@ -9,6 +9,7 @@ const sendPasswordResetEmail = require("../utils/passwordResetEmail");
 
 exports.verifyEmail = catchAsync(async (req, res, next) => {
     const { email } = req.body;
+    console.log(req.body);
     const exist = await User.findOne({
         email: { $regex: new RegExp(email, "i") },
     });
