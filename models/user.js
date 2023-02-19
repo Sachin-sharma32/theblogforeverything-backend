@@ -59,6 +59,10 @@ const userSchema = new mongoose.Schema(
         education: String,
         passwordResetToken: String,
         passwordResetExpiry: Date,
+        newsletter: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );

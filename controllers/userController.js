@@ -6,7 +6,7 @@ const catchAsync = require("../utils/catchAsync");
 const Post = require("../models/post");
 
 exports.updateUser = catchAsync(async (req, res, next) => {
-    console.log(req.body);
+    req.body;
     const { id } = req.params;
 
     if (req.body.password) {

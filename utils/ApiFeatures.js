@@ -17,7 +17,7 @@ class ApiFeatures {
             const sortBy = this.queryString.sort.split(",").join(" ");
             this.query = this.query.sort(sortBy);
         } else {
-            this.query = this.query.sort("-createdAt");
+            this.query = this.query.sort("-updatedAt");
         }
         return this;
     }
@@ -40,18 +40,17 @@ class ApiFeatures {
                             $in: new RegExp(this.queryString.filter, "i"),
                         },
                     },
-                    {
-                        "author.name": /this.queryString.filter/i,
-                    },
-                    {
-                        "tags.title": { $in: [/this.queryString.filter/i] },
-                    },
-                    {
-                        "category.title": /this.queryString.filter/i,
-                    },
                 ],
             });
             return this;
+        }
+        return this;
+    }
+    type() {
+        if (this.queryString.type !== "") {
+            this.query = this.query.find({
+                type: { $regex: new RegExp(this.queryString.type, "i") },
+            });
         }
         return this;
     }

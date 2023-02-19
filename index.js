@@ -87,7 +87,7 @@ app.get("/getMe", getMe);
 app.post(
     "/assistence",
     catchAsync(async (req, res, next) => {
-        console.log(req.body);
+        req.body;
         const configuration = new Configuration({
             apiKey: process.env.OPENAI_API_KEY,
         });
@@ -104,7 +104,7 @@ app.post(
             frequency_penalty: 0.5,
             presence_penalty: 0,
         });
-        console.log(response.data.choices[0].text);
+        response.data.choices[0].text;
         res.status(200).send({
             bot: response.data.choices[0].text,
         });

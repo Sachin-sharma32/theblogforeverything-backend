@@ -49,7 +49,7 @@ exports.getAllCategories = catchAsync(async (req, res) => {
 });
 
 exports.createCategory = catchAsync(async (req, res, next) => {
-    console.log(req.body.title);
+    req.body.title;
     const exists = await Category.findOne({
         title: { $regex: new RegExp(req.body.title, "i") },
     });

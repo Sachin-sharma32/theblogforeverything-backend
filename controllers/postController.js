@@ -5,6 +5,7 @@ const User = require("../models/user");
 const ApiFeatures = require("../utils/ApiFeatures");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
+const sendEmail = require("../utils/newsletterEmail");
 
 exports.updatePost = catchAsync(async (req, res, next) => {
     const { id } = req.params;
@@ -37,16 +38,62 @@ exports.deletePost = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllPosts = catchAsync(async (req, res, next) => {
+    req.body;
     const features = new ApiFeatures(Post.find(), req.query)
         .pagination()
         .sort()
-        .filter();
+        .filter()
+        .type();
     const docs = await features.query;
-    console.log(docs);
+    let total;
+    if (!req.query.type) {
+        total = await Post.find({
+            $or: [
+                {
+                    title: {
+                        $in: new RegExp(req.query.filter, "i"),
+                    },
+                },
+                {
+                    summery: {
+                        $in: new RegExp(req.query.filter, "i"),
+                    },
+                },
+                {
+                    content: {
+                        $in: new RegExp(req.query.filter, "i"),
+                    },
+                },
+            ],
+        }).count();
+    } else {
+        total = await Post.find({
+            $or: [
+                {
+                    title: {
+                        $in: new RegExp(req.query.filter, "i"),
+                    },
+                },
+                {
+                    summery: {
+                        $in: new RegExp(req.query.filter, "i"),
+                    },
+                },
+                {
+                    content: {
+                        $in: new RegExp(req.query.filter, "i"),
+                    },
+                },
+            ],
+            type: req.query.type,
+        }).count();
+    }
+
     res.status(200).json({
         status: "success",
         data: {
             docs,
+            total,
         },
     });
 });
@@ -70,9 +117,8 @@ exports.createPost = catchAsync(async (req, res, next) => {
         return next(new AppError("There is already a best post", 400));
     }
     const doc = await Post.create(req.body);
+
     const user = await User.findById(req.body.author._id);
-    console.log(doc);
-    console.log(user);
     user.posts.push(doc);
     await User.findByIdAndUpdate(user._id, user, {
         runValidators: true,
@@ -80,6 +126,25 @@ exports.createPost = catchAsync(async (req, res, next) => {
     });
     await Like.create({ postId: doc._id, users: [] });
     await Comment.create({ postId: doc._id, comments: [] });
+
+    const emails = await User.find({
+        $and: [
+            { preferences: { $in: [req.body.category] } },
+            { newsletter: true },
+        ],
+    }).select("email");
+    const newPost = await Post.findById(doc._id);
+    if (emails.length > 0) {
+        await sendEmail({
+            email: emails,
+            subject: "New post uploaded",
+            category: post.category.title,
+            title: post.title,
+            url: `https://theblogforeverything.com/post/${newPost._id}`,
+            message: `https://theblogforeverything.com/post/${newPost._id}`,
+        });
+    }
+
     res.status(200).json({
         status: "success",
         data: {
@@ -102,7 +167,7 @@ exports.getBestPost = catchAsync(async (req, res, next) => {
 
 exports.handleLike = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    // console.log(id, req.body.userId);
+    // (id, req.body.userId);
     let post = await Post.findById(id);
     const userId = req.body.userId;
 
@@ -113,7 +178,7 @@ exports.handleLike = catchAsync(async (req, res, next) => {
     let exist;
     if (post.likes.length > 0) {
         exist = post.likes.find((like) => {
-            console.log(like);
+            like;
             return like._id == userId;
         });
     }
