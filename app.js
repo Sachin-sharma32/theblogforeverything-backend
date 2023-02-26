@@ -140,7 +140,6 @@ const handleValidationError = (err, res) => {
     return new AppError(message, 400);
 };
 
-
 const handleJWTError = (err) => {
     const message = "Invalid jwt";
     return new AppError(message, 401);
@@ -175,4 +174,5 @@ mongoose
     });
 
 app.listen(process.env.PORT, () => {
+    ("server is up and running");
 });
