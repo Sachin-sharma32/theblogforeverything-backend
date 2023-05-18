@@ -45,9 +45,9 @@ app.use(hpp());
 app.use(morgan("dev"));
 
 app.use(
-    express.json({
-        limit: "1mb",
-    })
+  express.json({
+    limit: "1mb",
+  })
 );
 
 //? 7
@@ -69,11 +69,11 @@ app.use(
 // app.use(cors(corsOptions));
 
 app.use(
-    cors({
-        origin: "*",
-        credentials: true,
-        optionsSuccessStatus: 200,
-    })
+  cors({
+    origin: "*",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
 );
 
 app.use("/api/v1/users", userRouter);
@@ -85,30 +85,30 @@ app.use("/api/v1/tags", tagRouter);
 app.get("/getMe", getMe);
 
 app.post(
-    "/assistence",
-    catchAsync(async (req, res, next) => {
-        req.body;
-        const configuration = new Configuration({
-            apiKey: process.env.OPENAI_API_KEY,
-        });
-        const openai = new OpenAIApi(configuration);
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: `${req.body.prompt}`,
-            //* risk - temprature
-            temperature: 0,
-            //* response size (characters)
-            max_tokens: 3000,
-            top_p: 1,
-            //* likelyhood of repeating the same response
-            frequency_penalty: 0.5,
-            presence_penalty: 0,
-        });
-        response.data.choices[0].text;
-        res.status(200).send({
-            bot: response.data.choices[0].text,
-        });
-    })
+  "/assistence",
+  catchAsync(async (req, res, next) => {
+    req.body;
+    const configuration = new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: `${req.body.prompt}`,
+      //* risk - temprature
+      temperature: 0,
+      //* response size (characters)
+      max_tokens: 3000,
+      top_p: 1,
+      //* likelyhood of repeating the same response
+      frequency_penalty: 0.5,
+      presence_penalty: 0,
+    });
+    response.data.choices[0].text;
+    res.status(200).send({
+      bot: response.data.choices[0].text,
+    });
+  })
 );
 
 // app.use("/api/v1/stats", statRouter);
@@ -119,60 +119,59 @@ app.use(express.static("uploads"));
 app.use("/api/v1/uploads", uploadRouter);
 
 app.all("*", (req, res) => {
-    res.status(404).json({
-        status: "failure",
-        message: `cannot find ${req.originalUrl} on the server`,
-    });
+  res.status(404).json({
+    status: "failure",
+    message: `cannot find ${req.originalUrl} on the server`,
+  });
 });
 
 const handleCastError = (error) => {
-    return new AppError(`Invalid ${error.path}: ${error.value}`, 400);
+  return new AppError(`Invalid ${error.path}: ${error.value}`, 400);
 };
 
 const handleDuplicateFieldError = (err, res) => {
-    const message = `${err.keyValue.email} already exist`;
-    return new AppError(message, 400);
+  const message = `${err.keyValue.email} already exist`;
+  return new AppError(message, 400);
 };
 
 const handleValidationError = (err, res) => {
-    const errors = Object.values(err.errors).map((el) => el.message);
-    const message = `Invalid input data. ${errors.join(". ")}`;
-    return new AppError(message, 400);
+  const errors = Object.values(err.errors).map((el) => el.message);
+  const message = `Invalid input data. ${errors.join(". ")}`;
+  return new AppError(message, 400);
 };
 
 const handleJWTError = (err) => {
-    const message = "Invalid jwt";
-    return new AppError(message, 401);
+  const message = "Invalid jwt";
+  return new AppError(message, 401);
 };
 
 const handleExpirationalError = (err) =>
-    new AppError("your jwt token has expired", 404);
+  new AppError("your jwt token has expired", 404);
 
 app.use((err, req, res, next) => {
-    let { ...error } = err;
-    if (err.name === "CastError") error = handleCastError(error);
-    if (err.code === 11000) error = handleDuplicateFieldError(error);
-    if (err.name === "ValidationError") error = handleValidationError(error);
-    if (err.name === "JsonWebTokenError") error = handleJWTError(error);
-    if (err.name === "TokenExpiredError")
-        error = handleExpirationalError(error);
-    // res.status(error.statusCode).json({
-    //     status: error.status,
-    //     message: error.msg,
-    // });
-    res.status(500).json({
-        message: err.message,
-    });
+  let { ...error } = err;
+  if (err.name === "CastError") error = handleCastError(error);
+  if (err.code === 11000) error = handleDuplicateFieldError(error);
+  if (err.name === "ValidationError") error = handleValidationError(error);
+  if (err.name === "JsonWebTokenError") error = handleJWTError(error);
+  if (err.name === "TokenExpiredError") error = handleExpirationalError(error);
+  // res.status(error.statusCode).json({
+  //     status: error.status,
+  //     message: error.msg,
+  // });
+  res.status(500).json({
+    message: err.message,
+  });
 });
 
 mongoose
-    .connect(
-        "mongodb+srv://sachin:sachin1234@cluster0.qryslrm.mongodb.net/?retryWrites=true&w=majority"
-    )
-    .then((connection) => {
-        ("connected to db");
-    });
+  .connect(
+    "mongodb+srv://sachin:sachin1234@cluster0.qryslrm.mongodb.net/?retryWrites=true&w=majority"
+  )
+  .then((connection) => {
+    ("connected to db");
+  });
 
-app.listen(process.env.PORT, () => {
-    ("server is up and running");
+app.listen(8000, () => {
+  ("server is up and running");
 });
