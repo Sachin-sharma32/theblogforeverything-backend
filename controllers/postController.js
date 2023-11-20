@@ -302,3 +302,118 @@ exports.getRelatedPosts = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getAllPostsCms = catchAsync(async (req, res, next) => {
+  const features = new ApiFeatures(Post.find(), req.query)
+    .pagination()
+    .sort()
+    .filter();
+  const docs = await features.query;
+  console.log(docs);
+  if (!req.query.type && !req.query.filter) {
+    total = await Post.countDocuments();
+    console.log(total);
+  } else if (!req.query.type && req.query.filter) {
+    total = await Post.find({
+      $or: [
+        {
+          title: {
+            $in: new RegExp(req.query.filter, "i"),
+          },
+        },
+        {
+          summery: {
+            $in: new RegExp(req.query.filter, "i"),
+          },
+        },
+        {
+          content: {
+            $in: new RegExp(req.query.filter, "i"),
+          },
+        },
+        {
+          author: {
+            $in: await User.find({
+              name: {
+                $in: new RegExp(req.query.filter, "i"),
+              },
+            }),
+          },
+        },
+        {
+          tags: {
+            $in: await Tag.find({
+              title: {
+                $in: new RegExp(req.query.filter, "i"),
+              },
+            }),
+          },
+        },
+        {
+          category: {
+            $in: await Category.find({
+              title: {
+                $in: new RegExp(req.query.filter, "i"),
+              },
+            }),
+          },
+        },
+      ],
+    }).count();
+  } else {
+    total = await Post.find({
+      $or: [
+        {
+          title: {
+            $in: new RegExp(req.query.filter, "i"),
+          },
+        },
+        {
+          summery: {
+            $in: new RegExp(req.query.filter, "i"),
+          },
+        },
+        {
+          content: {
+            $in: new RegExp(req.query.filter, "i"),
+          },
+        },
+        {
+          author: {
+            $in: await User.find({
+              name: {
+                $in: new RegExp(req.query.filter, "i"),
+              },
+            }),
+          },
+        },
+        {
+          tags: {
+            $in: await Tag.find({
+              title: {
+                $in: new RegExp(req.query.filter, "i"),
+              },
+            }),
+          },
+        },
+        {
+          category: {
+            $in: await Category.find({
+              title: {
+                $in: new RegExp(req.query.filter, "i"),
+              },
+            }),
+          },
+        },
+      ],
+      type: req.query.type,
+    }).count();
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      docs,
+      total,
+    },
+  });
+});

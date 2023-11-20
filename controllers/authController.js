@@ -20,8 +20,8 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
     email: req.body.email,
     name: req.body.name,
     subject: "User verification link",
-    url: `https://theblogforeverything-backend-h8fa.vercel.app/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
-    message: `https://theblogforeverything-backend-h8fa.vercel.app/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
+    url: `http://localhost:8000/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
+    message: `http://localhost:8000/api/v1/auth/register?name=${req.body.name}&email=${req.body.email}&password=${req.body.password}`,
   });
   res.status(200).json({
     status: "success",

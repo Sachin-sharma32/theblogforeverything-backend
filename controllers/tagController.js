@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const Tag = require("../models/tag");
+const ApiFeatures = require("../utils/ApiFeatures");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 
@@ -91,3 +92,19 @@ exports.getTotalTags = catchAsync(async (req, res, next) => {
         },
     });
 });
+
+exports.getAllTagsCms = catchAsync(async (req, res, next) => {
+    const features = new ApiFeatures(Tag.find(), req.query)
+      .pagination()
+      .sort()
+      .filter();
+    const docs = await features.query;
+    const total = await Tag.countDocuments();
+    res.status(200).json({
+      status: "success",
+      data: {
+        docs,
+        total,
+      },
+    });
+  });

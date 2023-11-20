@@ -169,9 +169,10 @@ mongoose
     "mongodb+srv://sachin:sachin1234@cluster0.qryslrm.mongodb.net/?retryWrites=true&w=majority"
   )
   .then((connection) => {
+    console.log
     ("connected to db");
   });
 
 app.listen(8000, () => {
-  ("server is up and running");
+  console.log("server is up and running");
 });

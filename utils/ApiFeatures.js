@@ -50,7 +50,7 @@ const filterProducts = async (queryString, query) => {
       },
     ],
   });
-  if (queryString.type !== "") {
+  if (queryString.type) {
     query = query.filter((product) => product.type == queryString.type);
   }
   return query;

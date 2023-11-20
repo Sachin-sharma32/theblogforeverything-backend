@@ -2,6 +2,7 @@ const Category = require("../models/category.js");
 const catchAsync = require("../utils/catchAsync.js");
 const Post = require("../models/post.js");
 const AppError = require("../utils/AppError.js");
+const ApiFeatures = require("../utils/ApiFeatures.js");
 
 exports.updateCategory = catchAsync(async (req, res, next) => {
     const { id } = req.params;
@@ -100,3 +101,19 @@ exports.getTotalCategories = catchAsync(async (req, res, next) => {
         },
     });
 });
+
+exports.getAllCategoriesCms = catchAsync(async (req, res) => {
+    const features = new ApiFeatures(Category.find(), req.query)
+      .pagination()
+      .sort()
+      .filter();
+    const docs = await features.query;
+    const total = await Category.countDocuments();
+    res.status(200).json({
+      status: "success",
+      data: {
+        docs,
+        total,
+      },
+    });
+  });
